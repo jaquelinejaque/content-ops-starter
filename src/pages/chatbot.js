@@ -25,14 +25,14 @@ function ChatMessage({ message }) {
                             </svg>
                         </div>
                     ) : (
-                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#e8a048] to-[#d4782f] flex items-center justify-center">
-                            <span className="text-white text-xs font-bold">R</span>
+                        <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center">
+                            <span className="text-white text-xs font-bold">C</span>
                         </div>
                     )}
                 </div>
                 <div className="flex-1 min-w-0">
-                    <div className="text-xs font-medium mb-1" style={{ color: isUser ? '#a78bfa' : '#e8a048' }}>
-                        {isUser ? 'Voce' : 'Rolana'}
+                    <div className="text-xs font-medium mb-1" style={{ color: isUser ? '#a78bfa' : '#d97706' }}>
+                        {isUser ? 'Voce' : 'Claude'}
                     </div>
                     <div className="text-sm leading-relaxed whitespace-pre-wrap" style={{ color: '#e2e8f0' }}>
                         {message.content}
@@ -48,16 +48,16 @@ function TypingIndicator() {
         <div className="py-4 px-4 bg-[#1a1a2e]">
             <div className="max-w-3xl mx-auto flex gap-3">
                 <div className="flex-shrink-0 mt-0.5">
-                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#e8a048] to-[#d4782f] flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">R</span>
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-[#d97706] to-[#b45309] flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">C</span>
                     </div>
                 </div>
                 <div className="flex-1">
-                    <div className="text-xs font-medium mb-1" style={{ color: '#e8a048' }}>Rolana</div>
+                    <div className="text-xs font-medium mb-1" style={{ color: '#d97706' }}>Claude</div>
                     <div className="flex items-center gap-1 py-1">
-                        <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#e8a048', animationDelay: '0ms' }} />
-                        <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#e8a048', animationDelay: '200ms' }} />
-                        <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#e8a048', animationDelay: '400ms' }} />
+                        <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#d97706', animationDelay: '0ms' }} />
+                        <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#d97706', animationDelay: '200ms' }} />
+                        <span className="inline-block w-1.5 h-1.5 rounded-full animate-pulse" style={{ backgroundColor: '#d97706', animationDelay: '400ms' }} />
                     </div>
                 </div>
             </div>
@@ -131,8 +131,8 @@ export default function Chatbot() {
     return (
         <>
             <Head>
-                <title>Rolana - Inteligencia Financeira</title>
-                <meta name="description" content="Rolana - Inteligencia artificial gratuita especializada em mercados financeiros." />
+                <title>Claude Code - Mercados Financeiros</title>
+                <meta name="description" content="Claude Code para mercados financeiros - assistente de IA da Anthropic especializado em financas." />
                 <style>{`
                     body { margin: 0; padding: 0; background: #0f0f1a; }
                     * { box-sizing: border-box; }
@@ -161,13 +161,13 @@ export default function Chatbot() {
                     <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between">
                         <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center gradient-animate"
-                                style={{ background: 'linear-gradient(135deg, #e8a048, #d4782f, #e8a048)' }}>
-                                <span className="text-white font-bold text-sm">R</span>
+                                style={{ background: 'linear-gradient(135deg, #d97706, #b45309, #d97706)' }}>
+                                <span className="text-white font-bold text-sm">C</span>
                             </div>
                             <div className="flex items-center gap-2">
-                                <span className="text-sm font-semibold" style={{ color: '#f1f5f9' }}>Rolana</span>
-                                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: '#1e1e30', color: '#64748b' }}>v1.0</span>
-                                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: '#0d3320', color: '#34d399' }}>Gratis</span>
+                                <span className="text-sm font-semibold" style={{ color: '#f1f5f9' }}>Claude Code</span>
+                                <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: '#1e1e30', color: '#64748b' }}>Financas</span>
+                                <span className="text-xs px-2 py-0.5 rounded-full font-medium" style={{ background: '#1e1e30', color: '#d97706' }}>by Anthropic</span>
                             </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -199,14 +199,14 @@ export default function Chatbot() {
                         <div className="flex flex-col items-center justify-center px-4 fade-in" style={{ minHeight: 'calc(100vh - 140px)' }}>
                             {/* Hero */}
                             <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-6 gradient-animate"
-                                style={{ background: 'linear-gradient(135deg, #e8a048, #d4782f, #e8a048)' }}>
-                                <span className="text-white text-2xl font-bold">R</span>
+                                style={{ background: 'linear-gradient(135deg, #d97706, #b45309, #d97706)' }}>
+                                <span className="text-white text-2xl font-bold">C</span>
                             </div>
                             <h2 className="text-xl font-semibold mb-2" style={{ color: '#f1f5f9' }}>
-                                Rolana - Inteligencia Financeira
+                                Claude Code - Mercados Financeiros
                             </h2>
                             <p className="text-sm text-center max-w-md mb-8" style={{ color: '#64748b' }}>
-                                Sua inteligencia artificial gratuita para mercados financeiros. Pergunte sobre acoes, renda fixa, cripto, economia e mais.
+                                Inteligencia artificial da Anthropic especializada em mercados financeiros. Pergunte sobre acoes, renda fixa, cripto, economia e mais.
                             </p>
 
                             {/* Suggestion cards */}
@@ -218,7 +218,7 @@ export default function Chatbot() {
                                             onClick={() => handleSuggestion(q)}
                                             className="text-left text-xs px-4 py-3 rounded-lg transition-all"
                                             style={{ background: '#13131f', border: '1px solid #1e1e30', color: '#94a3b8' }}
-                                            onMouseEnter={(e) => { e.target.style.borderColor = '#e8a048'; e.target.style.color = '#e2e8f0'; e.target.style.background = '#1a1a2e'; }}
+                                            onMouseEnter={(e) => { e.target.style.borderColor = '#d97706'; e.target.style.color = '#e2e8f0'; e.target.style.background = '#1a1a2e'; }}
                                             onMouseLeave={(e) => { e.target.style.borderColor = '#1e1e30'; e.target.style.color = '#94a3b8'; e.target.style.background = '#13131f'; }}
                                         >
                                             {q}
@@ -260,7 +260,7 @@ export default function Chatbot() {
                         <form onSubmit={handleSubmit} className="flex items-center gap-2">
                             <div className="flex-1 flex items-center rounded-lg px-3 py-2.5"
                                 style={{ background: '#0f0f1a', border: '1px solid #1e1e30' }}>
-                                <span className="text-sm mr-2" style={{ color: '#e8a048' }}>&gt;</span>
+                                <span className="text-sm mr-2" style={{ color: '#d97706' }}>&gt;</span>
                                 <input
                                     ref={inputRef}
                                     type="text"
@@ -269,7 +269,7 @@ export default function Chatbot() {
                                     placeholder="Pergunte sobre mercados financeiros..."
                                     disabled={isLoading}
                                     className="flex-1 bg-transparent text-sm outline-none"
-                                    style={{ color: '#e2e8f0', caretColor: '#e8a048' }}
+                                    style={{ color: '#e2e8f0', caretColor: '#d97706' }}
                                 />
                             </div>
                             <button
@@ -277,7 +277,7 @@ export default function Chatbot() {
                                 disabled={!input.trim() || isLoading}
                                 className="px-4 py-2.5 rounded-lg text-sm font-medium transition-all"
                                 style={{
-                                    background: !input.trim() || isLoading ? '#1e1e30' : 'linear-gradient(135deg, #e8a048, #d4782f)',
+                                    background: !input.trim() || isLoading ? '#1e1e30' : 'linear-gradient(135deg, #d97706, #b45309)',
                                     color: !input.trim() || isLoading ? '#475569' : '#fff',
                                     cursor: !input.trim() || isLoading ? 'not-allowed' : 'pointer',
                                     opacity: !input.trim() || isLoading ? 0.5 : 1
@@ -288,10 +288,10 @@ export default function Chatbot() {
                         </form>
                         <div className="flex items-center justify-between mt-2 px-1">
                             <p className="text-xs" style={{ color: '#334155' }}>
-                                Rolana pode cometer erros. Nao constitui consultoria financeira.
+                                Claude pode cometer erros. Nao constitui consultoria financeira.
                             </p>
                             <p className="text-xs" style={{ color: '#334155' }}>
-                                Powered by Rolana AI
+                                Powered by Claude - Anthropic
                             </p>
                         </div>
                     </div>
