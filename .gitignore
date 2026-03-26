@@ -41,4 +41,7 @@ yarn-error.log*
 *.code-workspace
 .idea
 
-tmp*.vercel
+# Vercel
+.vercel
+
+tmp*

@@ -4,7 +4,9 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
-        "start": "next start"
+        "start": "next start",
+        "desktop": "electron electron/main.js",
+        "desktop:build": "electron-builder --dir"
     },
     "dependencies": {
         "@algolia/autocomplete-js": "^1.17.1",
@@ -17,7 +19,7 @@
         "glob": "^10.4.2",
         "markdown-to-jsx": "^7.7.1",
         "marked": "^14.1.2",
-        "next": "15.1.0",
+        "next": "^16.2.1",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",
         "swiper": "^11.1.4",
@@ -31,8 +33,26 @@
         "@types/react": "^19.0.1",
         "@types/react-dom": "^19.0.1",
         "autoprefixer": "^10.4.19",
+        "electron": "^41.0.4",
+        "electron-builder": "^26.8.1",
         "prettier": "^3.3.2",
         "typescript": "^5.6.2"
     },
-    "main": "next.config.js"
+    "main": "electron/main.js",
+    "build": {
+        "appId": "com.anthropic.claude-code-desktop",
+        "productName": "Claude Code Desktop",
+        "files": [
+            "electron/**/*"
+        ],
+        "mac": {
+            "category": "public.app-category.developer-tools"
+        },
+        "win": {
+            "target": "nsis"
+        },
+        "linux": {
+            "target": "AppImage"
+        }
+    }
 }

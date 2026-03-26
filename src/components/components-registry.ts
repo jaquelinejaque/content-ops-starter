@@ -33,6 +33,7 @@ export function getComponent(key: string): ComponentType {
 const components = {
     AutoCompletePosts: dynamic(() => import('./blocks/SearchBlock/AutoCompletePosts')),
     CarouselSection: dynamic(() => import('./sections/CarouselSection')),
+    ClaudeCodeSection: dynamic(() => import('./sections/ClaudeCodeSection')),
     CheckboxFormControl: dynamic(() => import('./blocks/FormBlock/CheckboxFormControl')),
     DividerSection: dynamic(() => import('./sections/DividerSection')),
     EmailFormControl: dynamic(() => import('./blocks/FormBlock/EmailFormControl')),

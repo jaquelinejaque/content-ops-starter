@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Claude Code</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #0a0a0a;
+            color: #e4e4e7;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #app { height: 100vh; display: flex; flex-direction: column; }
+
+        /* Title bar */
+        .titlebar {
+            background: #18181b;
+            border-bottom: 1px solid #27272a;
+            padding: 0 16px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            -webkit-app-region: drag;
+        }
+
+        .window-controls {
+            position: absolute;
+            left: 16px;
+            display: flex;
+            gap: 8px;
+            -webkit-app-region: no-drag;
+        }
+
+        .window-btn {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            display: block;
+        }
+        .wb-close { background: #ef4444; }
+        .wb-min { background: #f59e0b; }
+        .wb-max { background: #22c55e; }
+
+        .titlebar-center {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #a1a1aa;
+        }
+
+        .titlebar-right {
+            position: absolute;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .model-tag {
+            font-size: 11px;
+            color: #71717a;
+            background: #27272a;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .online-dot {
+            width: 7px; height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+        }
+
+        /* Main area */
+        .main-area { display: flex; flex: 1; overflow: hidden; }
+
+        /* Sessions sidebar */
+        .sidebar {
+            width: 260px;
+            background: #111113;
+            border-right: 1px solid #27272a;
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .sidebar-header {
+            padding: 16px;
+            border-bottom: 1px solid #27272a;
+        }
+
+        .new-session-btn {
+            width: 100%;
+            padding: 10px;
+            background: #27272a;
+            border: 1px solid #3f3f46;
+            border-radius: 8px;
+            color: #e4e4e7;
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.15s;
+        }
+        .new-session-btn:hover { background: #3f3f46; }
+
+        .sidebar-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #52525b;
+            padding: 16px 16px 8px;
+        }
+
+        .sessions-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 0 8px;
+        }
+
+        .session-item {
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.1s;
+            margin-bottom: 2px;
+        }
+        .session-item:hover { background: #1c1c1f; }
+        .session-item.active { background: #27272a; }
+
+        .session-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            color: #d4d4d8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .session-meta {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: #52525b;
+            margin-top: 4px;
+        }
+
+        .sidebar-footer {
+            padding: 12px 16px;
+            border-top: 1px solid #27272a;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: #3f3f46;
+            text-align: center;
+        }
+
+        /* Chat area */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a0a;
+        }
+
+        /* Messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 0;
+        }
+
+        .messages::-webkit-scrollbar { width: 6px; }
+        .messages::-webkit-scrollbar-track { background: transparent; }
+        .messages::-webkit-scrollbar-thumb { background: #27272a; border-radius: 3px; }
+
+        .message {
+            padding: 16px 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .message + .message { border-top: 1px solid #18181b; }
+
+        .msg-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .msg-avatar {
+            width: 28px; height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .avatar-user { background: #22c55e; color: #0a0a0a; }
+        .avatar-claude { background: #d97706; color: #0a0a0a; }
+
+        .msg-name {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: #e4e4e7;
+        }
+
+        .msg-time {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: #52525b;
+        }
+
+        .msg-body {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #d4d4d8;
+            padding-left: 38px;
+        }
+
+        .msg-body p { margin-bottom: 8px; }
+        .msg-body p:last-child { margin-bottom: 0; }
+
+        .code-block {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 12px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+            color: #a1a1aa;
+        }
+
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #34d399; }
+        .code-block .func { color: #60a5fa; }
+        .code-block .comment { color: #52525b; }
+        .code-block .type { color: #f59e0b; }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #52525b;
+        }
+
+        /* Tool use blocks */
+        .tool-block {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-left: 3px solid #d97706;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .tool-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            color: #d97706;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .tool-content {
+            color: #a1a1aa;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        /* Typing indicator */
+        .typing {
+            padding: 16px 32px;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+            display: none;
+        }
+
+        .typing.show { display: block; }
+
+        .typing-dots {
+            display: flex;
+            gap: 4px;
+            padding-left: 38px;
+        }
+
+        .typing-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #d97706;
+            animation: typingPulse 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typingPulse {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Input area */
+        .input-area {
+            border-top: 1px solid #27272a;
+            padding: 16px 32px;
+            background: #0f0f11;
+        }
+
+        .input-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: border-color 0.15s;
+        }
+
+        .input-container:focus-within {
+            border-color: #d97706;
+        }
+
+        .input-main {
+            display: flex;
+            align-items: center;
+            padding: 4px;
+        }
+
+        .input-field {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #e4e4e7;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            padding: 12px 16px;
+            outline: none;
+            line-height: 1.5;
+        }
+
+        .input-field::placeholder { color: #3f3f46; }
+
+        .send-btn {
+            width: 36px; height: 36px;
+            background: #d97706;
+            border: none;
+            border-radius: 8px;
+            color: #0a0a0a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 4px;
+            transition: background 0.15s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { background: #f59e0b; }
+        .send-btn:disabled { background: #27272a; color: #3f3f46; cursor: default; }
+
+        .send-btn svg { width: 18px; height: 18px; }
+
+        .input-footer {
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            color: #3f3f46;
+            border-top: 1px solid #1c1c1f;
+        }
+
+        .shortcuts { display: flex; gap: 16px; }
+
+        .shortcut kbd {
+            background: #27272a;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-family: 'Inter', sans-serif;
+            font-size: 10px;
+        }
+
+        /* Welcome screen */
+        .welcome {
+            text-align: center;
+            padding: 60px 32px;
+            max-width: 600px;
+            margin: auto;
+        }
+
+        .welcome-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 28px;
+        }
+
+        .welcome h1 {
+            font-family: 'Inter', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: #e4e4e7;
+            margin-bottom: 8px;
+        }
+
+        .welcome p {
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            color: #71717a;
+            line-height: 1.6;
+            margin-bottom: 32px;
+        }
+
+        .welcome-hints {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .hint-card {
+            background: #18181b;
+            border: 1px solid #27272a;
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .hint-card:hover { border-color: #3f3f46; background: #1c1c1f; }
+
+        .hint-card-title {
+            font-family: 'Inter', sans-serif;
+            font-size: 13px;
+            font-weight: 500;
+            color: #d4d4d8;
+            margin-bottom: 4px;
+        }
+
+        .hint-card-desc {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            color: #52525b;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar { display: none; }
+            .message { padding: 12px 16px; }
+            .input-area { padding: 12px 16px; }
+            .welcome-hints { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <div class="titlebar">
+        <div class="window-controls">
+            <span class="window-btn wb-close"></span>
+            <span class="window-btn wb-min"></span>
+            <span class="window-btn wb-max"></span>
+        </div>
+        <span class="titlebar-center">Claude Code</span>
+        <div class="titlebar-right">
+            <span class="model-tag">claude-opus-4-6</span>
+            <span class="online-dot"></span>
+        </div>
+    </div>
+
+    <div class="main-area">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <button class="new-session-btn" onclick="newSession()">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    New Session
+                </button>
+            </div>
+            <div class="sidebar-label">Today</div>
+            <div class="sessions-list">
+                <div class="session-item active">
+                    <div class="session-title">Claude Code Desktop</div>
+                    <div class="session-meta">Active now</div>
+                </div>
+                <div class="session-item">
+                    <div class="session-title">Fix authentication bug</div>
+                    <div class="session-meta">2 hours ago</div>
+                </div>
+                <div class="session-item">
+                    <div class="session-title">Add dark mode toggle</div>
+                    <div class="session-meta">5 hours ago</div>
+                </div>
+            </div>
+            <div class="sidebar-label">Yesterday</div>
+            <div class="sessions-list">
+                <div class="session-item">
+                    <div class="session-title">Refactor API endpoints</div>
+                    <div class="session-meta">Yesterday at 3:42 PM</div>
+                </div>
+                <div class="session-item">
+                    <div class="session-title">Setup CI/CD pipeline</div>
+                    <div class="session-meta">Yesterday at 11:15 AM</div>
+                </div>
+            </div>
+            <div class="sidebar-footer">Claude Code v1.0.0</div>
+        </div>
+
+        <div class="chat-area">
+            <div class="messages" id="messages">
+                <div class="welcome" id="welcome">
+                    <div class="welcome-icon">&#9672;</div>
+                    <h1>Claude Code</h1>
+                    <p>Your AI-powered coding assistant. Ask me to write code, debug issues, explain concepts, or help with any programming task.</p>
+                    <div class="welcome-hints">
+                        <div class="hint-card" onclick="sendHint('Create a React counter component with TypeScript')">
+                            <div class="hint-card-title">Write code</div>
+                            <div class="hint-card-desc">Create a React component</div>
+                        </div>
+                        <div class="hint-card" onclick="sendHint('Explain how async/await works in JavaScript')">
+                            <div class="hint-card-title">Explain concepts</div>
+                            <div class="hint-card-desc">How async/await works</div>
+                        </div>
+                        <div class="hint-card" onclick="sendHint('Debug this error: Cannot read property of undefined')">
+                            <div class="hint-card-title">Debug issues</div>
+                            <div class="hint-card-desc">Fix common errors</div>
+                        </div>
+                        <div class="hint-card" onclick="sendHint('Write a Python script to read and parse a CSV file')">
+                            <div class="hint-card-title">Python scripts</div>
+                            <div class="hint-card-desc">Parse a CSV file</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="typing" id="typing">
+                <div class="msg-header">
+                    <div class="msg-avatar avatar-claude">C</div>
+                    <span class="msg-name">Claude</span>
+                </div>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <div class="input-container">
+                    <form class="input-main" id="form" onsubmit="return onSubmit(event)">
+                        <input class="input-field" id="input" type="text" placeholder="Ask Claude anything..." autofocus>
+                        <button class="send-btn" type="submit" id="sendBtn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        </button>
+                    </form>
+                    <div class="input-footer">
+                        <div class="shortcuts">
+                            <span class="shortcut"><kbd>Enter</kbd> Send</span>
+                            <span class="shortcut"><kbd>Ctrl+K</kbd> Clear</span>
+                        </div>
+                        <span>claude-opus-4-6</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const messages = document.getElementById('messages');
+const input = document.getElementById('input');
+const welcomeEl = document.getElementById('welcome');
+const typingEl = document.getElementById('typing');
+let isTyping = false;
+
+function getTime() {
+    return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+}
+
+function addMessage(role, html) {
+    if (welcomeEl) welcomeEl.style.display = 'none';
+
+    const div = document.createElement('div');
+    div.className = 'message';
+
+    const isUser = role === 'user';
+    div.innerHTML = `
+        <div class="msg-header">
+            <div class="msg-avatar ${isUser ? 'avatar-user' : 'avatar-claude'}">${isUser ? 'Y' : 'C'}</div>
+            <span class="msg-name">${isUser ? 'You' : 'Claude'}</span>
+            <span class="msg-time">${getTime()}</span>
+        </div>
+        <div class="msg-body">${html}</div>
+    `;
+
+    messages.appendChild(div);
+    messages.scrollTop = messages.scrollHeight;
+}
+
+const responses = {
+    react: {
+        text: `<p>Here's a React counter component with TypeScript:</p>
+<div class="tool-block"><div class="tool-label">Write File</div><div class="tool-content">src/components/Counter.tsx</div></div>
+<div class="code-block"><div class="code-header"><span>Counter.tsx</span></div><span class="keyword">import</span> { <span class="func">useState</span> } <span class="keyword">from</span> <span class="string">"react"</span>;
+
+<span class="keyword">interface</span> <span class="type">CounterProps</span> {
+  initialValue?: <span class="type">number</span>;
+}
+
+<span class="keyword">export default function</span> <span class="func">Counter</span>({ initialValue = 0 }: <span class="type">CounterProps</span>) {
+  <span class="keyword">const</span> [count, setCount] = <span class="func">useState</span>(initialValue);
+
+  <span class="keyword">return</span> (
+    &lt;div className=<span class="string">"flex items-center gap-4 p-6"</span>&gt;
+      &lt;button onClick={() =&gt; setCount(c =&gt; c - 1)}&gt;-&lt;/button&gt;
+      &lt;span className=<span class="string">"text-3xl font-bold"</span>&gt;{count}&lt;/span&gt;
+      &lt;button onClick={() =&gt; setCount(c =&gt; c + 1)}&gt;+&lt;/button&gt;
+    &lt;/div&gt;
+  );
+}</div>
+<p>The component uses <code>useState</code> with an optional initial value prop and renders increment/decrement buttons with Tailwind CSS styling.</p>`
+    },
+    async: {
+        text: `<p><strong>async/await</strong> is syntactic sugar over Promises that makes asynchronous code look synchronous.</p>
+<div class="code-block"><span class="comment">// Without async/await (Promise chains)</span>
+<span class="func">fetch</span>(<span class="string">'/api/data'</span>)
+  .<span class="func">then</span>(res =&gt; res.<span class="func">json</span>())
+  .<span class="func">then</span>(data =&gt; console.<span class="func">log</span>(data))
+  .<span class="func">catch</span>(err =&gt; console.<span class="func">error</span>(err));
+
+<span class="comment">// With async/await (much cleaner)</span>
+<span class="keyword">async function</span> <span class="func">getData</span>() {
+  <span class="keyword">try</span> {
+    <span class="keyword">const</span> res = <span class="keyword">await</span> <span class="func">fetch</span>(<span class="string">'/api/data'</span>);
+    <span class="keyword">const</span> data = <span class="keyword">await</span> res.<span class="func">json</span>();
+    console.<span class="func">log</span>(data);
+  } <span class="keyword">catch</span> (err) {
+    console.<span class="func">error</span>(err);
+  }
+}</div>
+<p>Key points:</p>
+<p>1. <code>async</code> marks a function as returning a Promise</p>
+<p>2. <code>await</code> pauses execution until the Promise resolves</p>
+<p>3. Use <code>try/catch</code> for error handling instead of <code>.catch()</code></p>`
+    },
+    debug: {
+        text: `<p><strong>"Cannot read property of undefined"</strong> means you're trying to access a property on a value that is <code>undefined</code>.</p>
+<p>Common causes and fixes:</p>
+<div class="code-block"><span class="comment">// Problem: accessing nested property</span>
+<span class="keyword">const</span> user = <span class="func">getUser</span>(); <span class="comment">// might return undefined</span>
+console.<span class="func">log</span>(user.name); <span class="comment">// TypeError!</span>
+
+<span class="comment">// Fix 1: Optional chaining</span>
+console.<span class="func">log</span>(user?.name);
+
+<span class="comment">// Fix 2: Nullish coalescing</span>
+<span class="keyword">const</span> name = user?.name ?? <span class="string">"Unknown"</span>;
+
+<span class="comment">// Fix 3: Guard clause</span>
+<span class="keyword">if</span> (!user) <span class="keyword">return</span>;</div>
+<p>Use optional chaining (<code>?.</code>) as the simplest fix. For React, check if data is loaded before rendering.</p>`
+    },
+    python: {
+        text: `<p>Here's a Python script to read and parse a CSV file:</p>
+<div class="tool-block"><div class="tool-label">Write File</div><div class="tool-content">parse_csv.py</div></div>
+<div class="code-block"><span class="keyword">import</span> csv
+<span class="keyword">from</span> pathlib <span class="keyword">import</span> Path
+
+<span class="keyword">def</span> <span class="func">parse_csv</span>(filepath: <span class="type">str</span>) -&gt; <span class="type">list</span>[<span class="type">dict</span>]:
+    <span class="string">"""Read a CSV file and return list of dicts."""</span>
+    path = Path(filepath)
+    <span class="keyword">if not</span> path.exists():
+        <span class="keyword">raise</span> FileNotFoundError(f<span class="string">"File not found: {filepath}"</span>)
+
+    <span class="keyword">with</span> <span class="func">open</span>(path, newline=<span class="string">""</span>) <span class="keyword">as</span> f:
+        reader = csv.<span class="func">DictReader</span>(f)
+        <span class="keyword">return</span> <span class="func">list</span>(reader)
+
+<span class="comment"># Usage</span>
+data = <span class="func">parse_csv</span>(<span class="string">"data.csv"</span>)
+<span class="keyword">for</span> row <span class="keyword">in</span> data:
+    <span class="func">print</span>(row)</div>
+<p>This uses Python's built-in <code>csv.DictReader</code> which automatically maps each row to a dictionary using the header row as keys.</p>`
+    },
+    default: {
+        text: `<p>I'm a demo of the Claude Code Desktop interface. In the real app, I would process your request using the Claude AI model.</p>
+<p>Try clicking one of the suggestion cards, or ask about:</p>
+<p>- <strong>React</strong> components</p>
+<p>- <strong>async/await</strong> in JavaScript</p>
+<p>- <strong>Debugging</strong> common errors</p>
+<p>- <strong>Python</strong> scripts</p>`
+    }
+};
+
+function getResponse(msg) {
+    const l = msg.toLowerCase();
+    if (l.includes('react') || l.includes('component') || l.includes('counter')) return responses.react;
+    if (l.includes('async') || l.includes('await') || l.includes('promise')) return responses.async;
+    if (l.includes('debug') || l.includes('error') || l.includes('undefined')) return responses.debug;
+    if (l.includes('python') || l.includes('csv') || l.includes('parse')) return responses.python;
+    return responses.default;
+}
+
+function sendHint(text) {
+    input.value = text;
+    onSubmit(new Event('submit'));
+}
+
+function newSession() {
+    messages.innerHTML = '';
+    if (welcomeEl) {
+        messages.appendChild(welcomeEl);
+        welcomeEl.style.display = '';
+    }
+}
+
+function onSubmit(e) {
+    e.preventDefault();
+    if (!input.value.trim() || isTyping) return false;
+
+    const msg = input.value.trim();
+    input.value = '';
+
+    addMessage('user', `<p>${msg}</p>`);
+
+    isTyping = true;
+    typingEl.classList.add('show');
+    messages.scrollTop = messages.scrollHeight;
+
+    const resp = getResponse(msg);
+
+    setTimeout(() => {
+        typingEl.classList.remove('show');
+        addMessage('claude', resp.text);
+        isTyping = false;
+        input.focus();
+    }, 1200 + Math.random() * 800);
+
+    return false;
+}
+
+document.addEventListener('keydown', (e) => {
+    if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        newSession();
+    }
+});
+</script>
+</body>
+</html>
