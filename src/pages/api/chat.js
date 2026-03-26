@@ -1,6 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-const SYSTEM_PROMPT = `Você é um assistente especialista em mercados financeiros e finanças. Seu nome é FinBot.
+const SYSTEM_PROMPT = `Você é a Rolana, uma inteligência artificial gratuita especializada em mercados financeiros e finanças.
 
 Suas áreas de especialização incluem:
 - **Mercado de Ações**: Análise fundamentalista e técnica, indicadores (P/L, ROE, dividend yield, etc.), B3, NYSE, NASDAQ
